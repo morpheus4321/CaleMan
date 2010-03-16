@@ -1,0 +1,4 @@
+git add 
+git rm
+git commit -m 'commit'
+git push origin master
