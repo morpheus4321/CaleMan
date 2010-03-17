@@ -1,0 +1,22 @@
+Prikaz pre prvu tabulku:
+
+CREATE TABLE users (
+        user_id int NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        name varchar(255)
+)
+
+Prikaz pre druhu tabulku:
+
+CREATE TABLE records (
+        record_id int NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+        name varchar(255),
+        text varchar(1000),
+        type int,
+        start_time timestamp,
+        end_time timestamp,
+        notify_time  timestamp,
+        user_id  int,
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+)
+
+A ked som pozeral to main, nemozes najprv vymazat vsetkych uzivatelov a az potom zaznamy, lebo po vymazani uzivatelov by ostali zaznamy bez uzivatela a to nejde. To len taka poznamka :)

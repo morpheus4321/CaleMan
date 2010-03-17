@@ -25,21 +25,20 @@ public class RecordManager {
     private static final String USER = "app";
     private static final String PASSWD = "app";
 
-    
     public RecordManager(User currentUser) {
         this.currentUser = currentUser;
         makeConnection();
     }
 
-    private  void makeConnection() {
+    private void makeConnection() {
         try {
-            connection =
-                    DriverManager.getConnection(URL, USER, PASSWD );
+            connection = 
+                    DriverManager.getConnection(URL, USER, PASSWD);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
-    
+
     public void closeConnection() {
         if (connection != null) {
             try {
@@ -49,55 +48,74 @@ public class RecordManager {
             }
         }
     }
-    
+
     public void setUser(User user) {
-        this.currentUser = user;
+        this.currentUser = getUser(user.getName());
     }
 
     public void insertRecord(Record record) {
-        try {                 
+        try {
             PreparedStatement insert =
-                    connection.prepareStatement("INSERT INTO APP.RECORDS VALUES(?,?,?,?,?,?,?,?)");
-            insert.setInt(1, record.getId());
-            insert.setString(2, record.getName());
-            insert.setString(3, record.getText());
-            insert.setInt(4, record.getRecordType().ordinal());
+                    connection.prepareStatement("INSERT INTO APP.RECORDS (name, text, type, start_time, end_time, notify_time, user_id) VALUES(?,?,?,?,?,?,?)");
+            insert.setString(1, record.getName());
+            insert.setString(2, record.getText());
+            insert.setInt(3, record.getRecordType().ordinal());
             java.sql.Timestamp time = new Timestamp(record.getStartTime().getTime());
-            insert.setTimestamp(5, time);
+            insert.setTimestamp(4, time);
             time = new Timestamp(record.getEndTime().getTime());
-            insert.setTimestamp(6, time);
+            insert.setTimestamp(5, time);
             time = new Timestamp(record.getNotifyTime().getTime());
-            insert.setTimestamp(7, time);
-            insert.setInt(8, currentUser.getId());
+            insert.setTimestamp(6, time);
+            insert.setInt(7, currentUser.getId());
             insert.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } 
+        }
     }
 
-    public void insertUser() {        
-        try {     
+    public void insertUser(User newUser) {
+        try {
             PreparedStatement insertUser =
-                    connection.prepareStatement("INSERT INTO APP.USERS VALUES(?,?)");
-            insertUser.setInt(1, currentUser.getId());
-            insertUser.setString(2, currentUser.getName());
+                    connection.prepareStatement("INSERT INTO APP.USERS (name) VALUES(?)");
+            insertUser.setString(1, newUser.getName());
             insertUser.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } 
+        }
+    }
+
+    public User getUser(String name) {
+        User user = new User();
+        try {
+
+            PreparedStatement select =
+                    connection.prepareStatement("SELECT * FROM APP.USERS WHERE name=?");
+            select.setString(1, name);
+            select.execute();
+            ResultSet rs = select.getResultSet();
+            while (rs.next()) {
+                user.setId(rs.getInt(1));
+                user.setName(rs.getString(2));
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            return user;
+        }
     }
 
     public void deleteRecords() {
-        try {          
+        try {
             PreparedStatement delete =
                     connection.prepareStatement("DELETE FROM APP.RECORDS");
             delete.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
-        } 
+        }
     }
 
-    public void deleteUsers() {        
+    public void deleteUsers() {
         try {
             PreparedStatement delete =
                     connection.prepareStatement("DELETE FROM APP.USERS");
@@ -107,15 +125,15 @@ public class RecordManager {
         }
     }
 
-    public Set<User> getUsers() {        
+    public Set<User> getUsers() {
         Set<User> users = new HashSet<User>();
-        try {           
+        try {
             PreparedStatement select =
                     connection.prepareStatement("SELECT * FROM APP.USERS");
             select.execute();
             ResultSet rs = select.getResultSet();
             while (rs.next()) {
-                users.add(new User(rs.getString(2), rs.getInt(1)));
+                users.add(new User(rs.getInt(1), rs.getString(2)));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -145,9 +163,9 @@ public class RecordManager {
         }
     }
 
-    public Set<Record> getRecordsFromUser() {  
+    public Set<Record> getRecordsFromUser() {
         Set<Record> records = new HashSet<Record>();
-        try {        
+        try {
             PreparedStatement select =
                     connection.prepareStatement("SELECT * FROM APP.RECORDS WHERE USER_ID = ?");
             select.setInt(1, currentUser.getId());

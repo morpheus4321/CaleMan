@@ -15,15 +15,21 @@ import java.util.Set;
  */
 public class User {
 
+    private Integer id;
     private String name;
-    private int id;
     private Set<Record> records = new HashSet<Record>();
 
 
-    public User(String name, int id) {
-        this.name = name;
+    public User(Integer id, String name) {
         this.id = id;
+        this.name = name;
     }
+
+    public User(String name) {
+        this.name = name;
+    }
+
+    public User(){};
 
     public boolean addRecord(Record record) {
         return records.add(record);
@@ -32,7 +38,7 @@ public class User {
         return records.remove(record);
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -40,7 +46,7 @@ public class User {
         this.name = name;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
