@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.sql.DataSource;
 
 /**
@@ -21,10 +23,6 @@ public class RecordManager {
 
     private User currentUser;
     private DataSource dataSource;
-
-    public RecordManager(User currentUser) {
-        this.currentUser = currentUser;
-    }
 
     public User getCurrentUser() {
         return currentUser;
@@ -64,7 +62,7 @@ public class RecordManager {
         }
     }
 
-    public void insertUser(User newUser) {
+    public User insertUser(User newUser) {
         Connection connection;
         try {
             connection = dataSource.getConnection();
@@ -75,6 +73,7 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        return getUser(newUser.getName());
     }
 
     public User getUser(String name) {
@@ -83,15 +82,11 @@ public class RecordManager {
         try {
             connection = dataSource.getConnection();
 
-
-
             PreparedStatement select =
                     connection.prepareStatement("SELECT * FROM APP.USERS WHERE name=?");
             select.setString(1, name);
             select.execute();
             ResultSet rs = select.getResultSet();
-
-
 
             while (rs.next()) {
                 user.setId(rs.getInt(1));
@@ -129,8 +124,8 @@ public class RecordManager {
         }
     }
 
-    public Set<User> getUsers() {
-        Set<User> users = new HashSet<User>();
+    public SortedSet<User> getUsers() {
+        SortedSet<User> users = new TreeSet<User>();
         Connection connection;
         try {
             connection = dataSource.getConnection();
@@ -150,8 +145,8 @@ public class RecordManager {
 
     }
 
-    public Set<Record> getRecords() {
-        Set<Record> records = new HashSet<Record>();
+    public SortedSet<Record> getRecords() {
+        SortedSet<Record> records = new TreeSet<Record>();
         Connection connection;
         try {
             connection = dataSource.getConnection();
@@ -171,8 +166,8 @@ public class RecordManager {
         }
     }
 
-    public Set<Record> getRecordsFromUser() {
-        Set<Record> records = new HashSet<Record>();
+    public SortedSet<Record> getRecordsFromUser() {
+        SortedSet<Record> records = new TreeSet<Record>();
         Connection connection;
         try {
             connection = dataSource.getConnection();

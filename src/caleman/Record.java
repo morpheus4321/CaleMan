@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @author xjankov2
  */
-public class Record {
+public class Record implements Comparable<Record> {
 
     private Integer id;
     private String name;
@@ -95,5 +95,40 @@ public class Record {
 
     public void setNotifyTime(Date notifyTime) {
         this.notifyTime = notifyTime;
-    }    
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Record other = (Record) obj;
+        if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 83 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        Integer inte = new Integer(3);
+        inte.compareTo(4);
+
+        return name + " " + recordType + " " + startTime + " " + endTime;
+    }
+
+    public int compareTo(Record o) {
+        return this.id - o.getId();
+    }
+
 }
