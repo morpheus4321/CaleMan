@@ -4,9 +4,17 @@
 */
 package caleman;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
+import javax.sql.DataSource;
 
 /**
 *
@@ -36,23 +44,64 @@ public class Main {
 
         User user1 = new User("jaro");
         User user2 = new User("robo");
-        User user3 = new User("Nemam nic");
-
+        User user3 = new User("Du hast nich");
+        
         RecordManager manager = new RecordManager(user1);
+
+        DataSource dataSource = new DataSource() {
+
+            public Connection getConnection() throws SQLException {
+                return DriverManager.getConnection("jdbc:derby://localhost:1527/Calendar", "app", "app");
+            }
+
+            public Connection getConnection(String username, String password) throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public PrintWriter getLogWriter() throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void setLogWriter(PrintWriter out) throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void setLoginTimeout(int seconds) throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int getLoginTimeout() throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public <T> T unwrap(Class<T> iface) throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public boolean isWrapperFor(Class<?> iface) throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+          
+        };
+
+        manager.setDataSource(dataSource);
+        
+
 
         manager.deleteRecords();
         manager.deleteUsers();
         manager.insertUser(user1);
         manager.insertUser(user2);
-        manager.setUser(user1);
+        manager.setCurrentUser(user1);
         manager.insertRecord(record1);
 
-        manager.setUser(user2);
+        manager.setCurrentUser(user2);
 
         manager.insertRecord(record2);
-        manager.setUser(user1);
+        manager.setCurrentUser(user1);
         manager.insertRecord(record3);
-        manager.setUser(user2);
+        manager.setCurrentUser(user2);
         /*Set<User> users = manager.getUsers();
 for (User iter : users) {
 System.out.println("name : " + iter.getName() + " id : " + iter.getId());
@@ -64,10 +113,6 @@ System.out.println("name : " + iter.getName() + " id : " + iter.getId());
         for (Record r : records) {
             System.out.println(r.getId() + " " + r.getName());
         }
-
-
-
-        manager.closeConnection();
 
     }
 
