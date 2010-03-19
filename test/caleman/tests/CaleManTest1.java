@@ -26,9 +26,9 @@ import org.junit.Test;
 public class CaleManTest1 extends TestCase {
 
     @Test
-    public void testMain() {
+    public void testMain() throws SQLException {
 
-        Date startTime = new GregorianCalendar(2010, 3, 14, 16, 00).getTime();
+        /*Date startTime = new GregorianCalendar(2010, 3, 14, 16, 00).getTime();
         Date endTime = new GregorianCalendar(2010, 3, 14, 16, 20).getTime();
         Date notifyTime = new GregorianCalendar(2010, 3, 14, 15, 59).getTime();
 
@@ -44,7 +44,7 @@ public class CaleManTest1 extends TestCase {
 
         User user1 = new User("jaro");
         User user2 = new User("robo");
-        User user3 = new User("Du hast nich");
+        User user3 = new User("Du hast nichts");
 
         RecordManager manager = new RecordManager();
 
@@ -101,7 +101,7 @@ public class CaleManTest1 extends TestCase {
         manager.insertRecord(record3);
         manager.setCurrentUser(user2);
 
-        Set<Record> records = manager.getRecords();
+        Set<Record> records = manager.getAllRecords();
         int i = 1;
         for (Record r : records) {
             assertEquals(r.toString(), "pripomienka" + i + " BIRTHDAY 2010-04-14 2010-04-14");
@@ -109,5 +109,10 @@ public class CaleManTest1 extends TestCase {
             System.out.println(r);
             i++;
         }
-    }
+
+         *
+         */
+         }
+
+
 }

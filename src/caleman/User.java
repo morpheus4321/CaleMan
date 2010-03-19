@@ -20,16 +20,18 @@ public class User implements Comparable<User> {
     private Set<Record> records = new HashSet<Record>();
 
 
-    public User(Integer id, String name) {
+    /*public User(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
+     *
+     */
 
-    public User(String name) {
+    /*public User(String name) {
         this.name = name;
     }
-
-    public User(){};
+     *
+     */
 
     public boolean addRecord(Record record) {
         return records.add(record);
