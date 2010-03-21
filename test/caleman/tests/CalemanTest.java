@@ -64,7 +64,6 @@ public class CalemanTest extends TestCase {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
-
         recordManager.setDataSource(ds);
         recordManager.deleteRecords();
         recordManager.deleteUsers();
@@ -143,6 +142,33 @@ public class CalemanTest extends TestCase {
         assertFalse(newRecord1.getId().equals(newRecord2.getId()));
 
         assertEquals(2, recordManager.getAllRecords().size());
+    }
+
+    @Test
+    public void testDeleteUsersRecords() throws SQLException {
+        User user1 = new User();
+        user1.setName("First user");
+        recordManager.insertUser(user1);
+        recordManager.setCurrentUser(user1);
+
+        Record newRecord1 = new Record();
+        newRecord1.setName("New record 1");
+        newRecord1.setText("New text 2");
+        newRecord1.setRecordType(RecordType.MEETING);
+        newRecord1.setStartTime(new Date());
+        newRecord1.setEndTime(new Date());
+        newRecord1.setNotifyTime(new Date());
+        recordManager.insertRecord(newRecord1);
+
+        User user2 = new User();
+        user2.setName("Second user");
+        recordManager.insertUser(user2);
+
+        recordManager.deleteUsersRecords(user2);
+        assertEquals(1, recordManager.getAllRecords().size());
+        recordManager.deleteUsersRecords(user1);
+        assertEquals(0, recordManager.getAllRecords().size());
+
     }
 
     @Test

@@ -182,8 +182,25 @@ public class RecordManager {
         Connection connection = null;
         PreparedStatement delete = null;
         try {
+            deleteRecords();
             connection = dataSource.getConnection();
             delete = connection.prepareStatement("DELETE FROM APP.USERS");
+            delete.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            connection.close();
+            delete.close();
+        }
+    }
+
+     public void deleteUsersRecords(User user) throws SQLException {
+        Connection connection = null;
+        PreparedStatement delete = null;
+        try {
+            connection = dataSource.getConnection();
+            delete = connection.prepareStatement("DELETE FROM APP.RECORDS WHERE USER_ID=?");
+            delete.setInt(1, user.getId());
             delete.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
