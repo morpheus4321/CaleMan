@@ -29,7 +29,7 @@ public class CalemanTest extends TestCase {
     RecordManager recordManager = new RecordManager();
 
     @Override
-    public void setUp() throws SQLException {
+    public void setUp() {
         DataSource ds = new DataSource() {
 
             public Connection getConnection() throws SQLException {
@@ -70,21 +70,21 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testGetAllRecords() throws SQLException {
+    public void testGetAllRecords() {
         SortedSet<Record> records = new TreeSet<Record>();
         records = recordManager.getAllRecords();
         assertTrue(records.isEmpty());
     }
 
     @Test
-    public void testGetAllUsers() throws SQLException {
+    public void testGetAllUsers() {
         SortedSet<User> users = new TreeSet<User>();
         users = recordManager.getAllUsers();
         assertTrue(users.isEmpty());
     }
 
     @Test
-    public void testAddUser() throws SQLException {
+    public void testAddUser() {
         User newUser1 = new User();
         newUser1.setName("First User");
         assertNull(newUser1.getId());
@@ -107,7 +107,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddRecord() throws SQLException {
+    public void testAddRecord() {
         User testUser = new User();
         testUser.setName("Test user");
         recordManager.insertUser(testUser);
@@ -145,7 +145,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testDeleteUsersRecords() throws SQLException {
+    public void testDeleteUsersRecords() {
         User user1 = new User();
         user1.setName("First user");
         recordManager.insertUser(user1);
@@ -172,7 +172,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddUserWithExistingId() throws SQLException {
+    public void testAddUserWithExistingId() {
         try {
             User firstUser = new User();
             firstUser.setName("First User");
@@ -187,7 +187,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddUserWithNullName() throws SQLException {
+    public void testAddUserWithNullName() {
         try {
             User user = new User();
             recordManager.insertUser(user);
@@ -197,7 +197,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddRecordWithNullName() throws SQLException {
+    public void testAddRecordWithNullName() {
         try {
             User user = new User();
             user.setName("Test name");
@@ -216,7 +216,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddRecordWithNullText() throws SQLException {
+    public void testAddRecordWithNullText() {
         try {
             User user = new User();
             user.setName("Test name");
@@ -235,7 +235,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddRecordWithNullRecordType() throws SQLException {
+    public void testAddRecordWithNullRecordType() {
         try {
             User user = new User();
             user.setName("Test name");
@@ -254,7 +254,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddRecordWithNullStartTime() throws SQLException {
+    public void testAddRecordWithNullStartTime() {
         try {
             User user = new User();
             user.setName("Test name");
@@ -273,7 +273,7 @@ public class CalemanTest extends TestCase {
     }
 
     @Test
-    public void testAddRecordWithNullEndTime() throws SQLException {
+    public void testAddRecordWithNullEndTime() {
         try {
             User user = new User();
             user.setName("Test name");
