@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 
 /**
  *
- * @author xjankov2
+ * @author xjankov2 , xbalent
  */
 public class RecordManager {
 
@@ -27,7 +27,7 @@ public class RecordManager {
         return currentUser;
     }
 
-    public void setCurrentUser(User currentUser) throws SQLException {
+    public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
 
@@ -39,7 +39,7 @@ public class RecordManager {
         this.dataSource = dataSource;
     }
 
-    public void insertRecord(Record record) throws SQLException {
+    public void insertRecord(Record record) {
         if (record.getName() == null) {
             throw new NullPointerException("Record name is null");
         }
@@ -67,13 +67,13 @@ public class RecordManager {
         if (record.getId() != null) {
             throw new IllegalArgumentException("Product has already assigned id");
         }
-        
+
         Connection connection = null;
         PreparedStatement insertProduct = null;
         try {
             connection = dataSource.getConnection();
             insertProduct = connection.prepareStatement("INSERT INTO APP.RECORDS (name, text, type, start_time, "
-                    + "end_time, notify_time, user_id) VALUES(?,?,?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+                    + "end_time, notify_time, user_id) VALUES(?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             insertProduct.setString(1, record.getName());
             insertProduct.setString(2, record.getText());
             insertProduct.setInt(3, record.getRecordType().ordinal());
@@ -96,12 +96,12 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            insertProduct.close();
+            closeStatement(insertProduct);
+            closeConnection(connection);
         }
     }
 
-    public User insertUser(User newUser) throws SQLException {
+    public User insertUser(User newUser) {
         if (newUser.getName() == null) {
             throw new NullPointerException("User name is null");
         }
@@ -113,7 +113,7 @@ public class RecordManager {
         try {
             connection = dataSource.getConnection();
             insertUser =
-                    connection.prepareStatement("INSERT INTO APP.USERS (name) VALUES(?)",Statement.RETURN_GENERATED_KEYS);
+                    connection.prepareStatement("INSERT INTO APP.USERS (name) VALUES(?)", Statement.RETURN_GENERATED_KEYS);
             insertUser.setString(1, newUser.getName());
             insertUser.execute();
 
@@ -126,13 +126,13 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            insertUser.close();
+            closeStatement(insertUser);
+            closeConnection(connection);
         }
         return getUser(newUser.getName());
     }
 
-    public User getUser(String name) throws SQLException {
+    public User getUser(String name) {
         User user = new User();
         Connection connection = null;
         PreparedStatement select = null;
@@ -157,13 +157,13 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            select.close();
+            closeStatement(select);
+            closeConnection(connection);
             return user;
         }
     }
 
-    public void deleteRecords() throws SQLException {
+    public void deleteRecords() {
         Connection connection = null;
         PreparedStatement delete = null;
         try {
@@ -173,28 +173,53 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            delete.close();
+            closeStatement(delete);
+            closeConnection(connection);
         }
     }
 
-    public void deleteUsers() throws SQLException {
+    public void deleteUsers() {
         Connection connection = null;
         PreparedStatement delete = null;
-        try {
-            deleteRecords();
+        deleteRecords();
+        try {            
             connection = dataSource.getConnection();
             delete = connection.prepareStatement("DELETE FROM APP.USERS");
             delete.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            delete.close();
+            closeStatement(delete);
+            closeConnection(connection);
         }
     }
 
-     public void deleteUsersRecords(User user) throws SQLException {
+    public void deleteUser(User user) {
+        if (user == null) {
+            throw new NullPointerException("User is null");
+        }
+
+        Connection connection = null;
+        PreparedStatement delete = null;
+        deleteUsersRecords(user);
+        try {
+            connection = dataSource.getConnection();
+            delete = connection.prepareStatement("DELETE FROM APP.USERS WHERE USER_ID=?");
+            delete.setInt(1, user.getId());
+            delete.execute();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } finally {
+            closeStatement(delete);
+            closeConnection(connection);
+        }
+    }
+
+    public void deleteUsersRecords(User user) {
+        if (user == null) {
+            throw new NullPointerException("User is null");
+        }
+
         Connection connection = null;
         PreparedStatement delete = null;
         try {
@@ -205,12 +230,12 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            delete.close();
+            closeStatement(delete);
+            closeConnection(connection);
         }
     }
 
-    public SortedSet<User> getAllUsers() throws SQLException {
+    public SortedSet<User> getAllUsers() {
         SortedSet<User> users = new TreeSet<User>();
         Connection connection = null;
         PreparedStatement select = null;
@@ -231,15 +256,15 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            select.close();
+            closeStatement(select);
+            closeConnection(connection);
         }
         return users;
 
 
     }
 
-    public SortedSet<Record> getAllRecords() throws SQLException {
+    public SortedSet<Record> getAllRecords() {
         SortedSet<Record> records = new TreeSet<Record>();
         Connection connection = null;
         PreparedStatement select = null;
@@ -264,13 +289,13 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            select.close();
+            closeStatement(select);
+            closeConnection(connection);
             return records;
         }
     }
 
-    public SortedSet<Record> getRecordsFromUser() throws SQLException {
+    public SortedSet<Record> getRecordsFromUser() {
         SortedSet<Record> records = new TreeSet<Record>();
         Connection connection = null;
         PreparedStatement select = null;
@@ -294,10 +319,30 @@ public class RecordManager {
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
-            connection.close();
-            select.close();
+            closeStatement(select);
+            closeConnection(connection);
             return records;
         }
 
+    }
+
+    public static void closeStatement(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public static void closeConnection(Connection connextion) {
+        if (connextion != null) {
+            try {
+                connextion.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  *
- * @author xjankov2
+ * @author xjankov2, xbalent
  */
 public class User implements Comparable<User> {
 

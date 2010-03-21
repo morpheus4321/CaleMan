@@ -7,7 +7,7 @@ package caleman;
 
 /**
  *
- * @author xjankov2
+ * @author xjankov2, xbalent
  */
 public enum RecordType {
 

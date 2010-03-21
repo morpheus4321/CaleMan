@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  *
- * @author xjankov2
+ * @author xjankov2, xbalent
  */
 public class Record implements Comparable<Record> {
 
