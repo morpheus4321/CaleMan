@@ -20,31 +20,6 @@ public class Record implements Comparable<Record> {
     private Date endTime;
     private Date notifyTime;
 
-    /*public Record(Integer id, String name, String text, RecordType recordType,
-                  Date startTime, Date endTime, Date notifyTime) {
-        this.id = id;
-        this.name = name;
-        this.text = text;
-        this.recordType = recordType;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.notifyTime = notifyTime;
-    }
-     *
-     */
-
-    /*public Record(String name, String text, RecordType recordType,
-                  Date startTime, Date endTime, Date notifyTime) {
-        this.name = name;
-        this.text = text;
-        this.recordType = recordType;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.notifyTime = notifyTime;
-    }
-     *
-     */
-
     public Integer getId() {
         return id;
     }

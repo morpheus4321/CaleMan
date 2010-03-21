@@ -28,7 +28,7 @@ public class RecordManager {
     }
 
     public void setCurrentUser(User currentUser) throws SQLException {
-        this.currentUser = getUser(currentUser.getName());
+        this.currentUser = currentUser;
     }
 
     public DataSource getDataSource() {
@@ -40,9 +40,34 @@ public class RecordManager {
     }
 
     public void insertRecord(Record record) throws SQLException {
-        if (record.getId() != null) {
-            throw new IllegalArgumentException("Product has aAlready assigned id");
+        if (record.getName() == null) {
+            throw new NullPointerException("Record name is null");
         }
+
+        if (record.getText() == null) {
+            throw new NullPointerException("Record text is null");
+        }
+
+        if (record.getRecordType() == null) {
+            throw new NullPointerException("Record type is null");
+        }
+
+        if (record.getStartTime() == null) {
+            throw new NullPointerException("Record start time is null");
+        }
+
+        if (record.getEndTime() == null) {
+            throw new NullPointerException("Record end time is null");
+        }
+
+        if (record.getNotifyTime() == null) {
+            throw new NullPointerException("Record notify time is null");
+        }
+
+        if (record.getId() != null) {
+            throw new IllegalArgumentException("Product has already assigned id");
+        }
+        
         Connection connection = null;
         PreparedStatement insertProduct = null;
         try {
@@ -77,6 +102,9 @@ public class RecordManager {
     }
 
     public User insertUser(User newUser) throws SQLException {
+        if (newUser.getName() == null) {
+            throw new NullPointerException("User name is null");
+        }
         if (newUser.getId() != null) {
             throw new IllegalArgumentException("User has already assigned id");
         }

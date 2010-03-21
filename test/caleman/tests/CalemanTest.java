@@ -2,30 +2,29 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package caleman.tests;
 
 import caleman.Record;
 import caleman.RecordManager;
+import caleman.RecordType;
 import caleman.User;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.sql.DataSource;
 import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  *
  * @author xjankov2
  */
-public class CalemanTest extends TestCase{
-
-
+public class CalemanTest extends TestCase {
 
     RecordManager recordManager = new RecordManager();
 
@@ -34,7 +33,7 @@ public class CalemanTest extends TestCase{
         DataSource ds = new DataSource() {
 
             public Connection getConnection() throws SQLException {
-                return DriverManager.getConnection("jdbc:derby://localhost:1527/TestCalendar","app","app");
+                return DriverManager.getConnection("jdbc:derby://localhost:1527/TestCalendar", "app", "app");
             }
 
             public Connection getConnection(String username, String password) throws SQLException {
@@ -70,18 +69,22 @@ public class CalemanTest extends TestCase{
         recordManager.deleteRecords();
         recordManager.deleteUsers();
     }
-    public void testGetAllProducts() throws SQLException {
-        SortedSet<Record> products = new TreeSet<Record>();
-        products = recordManager.getAllRecords();
-        assertTrue(products.isEmpty());
+
+    @Test
+    public void testGetAllRecords() throws SQLException {
+        SortedSet<Record> records = new TreeSet<Record>();
+        records = recordManager.getAllRecords();
+        assertTrue(records.isEmpty());
     }
-    
+
+    @Test
     public void testGetAllUsers() throws SQLException {
         SortedSet<User> users = new TreeSet<User>();
         users = recordManager.getAllUsers();
         assertTrue(users.isEmpty());
     }
 
+    @Test
     public void testAddUser() throws SQLException {
         User newUser1 = new User();
         newUser1.setName("First User");
@@ -100,8 +103,184 @@ public class CalemanTest extends TestCase{
 
         recordManager.insertUser(newUser2);
         assertFalse(newUser1.getId().equals(newUser2.getId()));
-        SortedSet<User> users = recordManager.getAllUsers();
-     
+
         assertEquals(2, recordManager.getAllUsers().size());
+    }
+
+    @Test
+    public void testAddRecord() throws SQLException {
+        User testUser = new User();
+        testUser.setName("Test user");
+        recordManager.insertUser(testUser);
+        recordManager.setCurrentUser(testUser);
+
+        Record newRecord1 = new Record();
+        newRecord1.setName("New record 1");
+        newRecord1.setText("New text 2");
+        newRecord1.setRecordType(RecordType.MEETING);
+        newRecord1.setStartTime(new Date());
+        newRecord1.setEndTime(new Date());
+        newRecord1.setNotifyTime(new Date());
+        assertNull(newRecord1.getId());
+        recordManager.insertRecord(newRecord1);
+        assertNotNull(newRecord1.getId());
+
+        Iterator<Record> iter = recordManager.getAllRecords().iterator();
+        assertTrue(iter.hasNext());
+        Record returnedRecord = iter.next();
+        assertNotSame(newRecord1, returnedRecord);
+
+        Record newRecord2 = new Record();
+        newRecord2.setName("New record 2");
+        newRecord2.setText("New text 2");
+        newRecord2.setRecordType(RecordType.MEETING);
+        newRecord2.setStartTime(new Date());
+        newRecord2.setEndTime(new Date());
+        newRecord2.setNotifyTime(new Date());
+
+        recordManager.insertRecord(newRecord2);
+
+        assertFalse(newRecord1.getId().equals(newRecord2.getId()));
+
+        assertEquals(2, recordManager.getAllRecords().size());
+    }
+
+    @Test
+    public void testAddUserWithExistingId() throws SQLException {
+        try {
+            User firstUser = new User();
+            firstUser.setName("First User");
+            recordManager.insertUser(firstUser);
+            User userWithSameId = new User();
+            userWithSameId.setName("User With Same Id");
+            userWithSameId.setId(firstUser.getId());
+            recordManager.insertUser(userWithSameId);
+            fail();
+        } catch (IllegalArgumentException ex) {
+        }
+    }
+
+    @Test
+    public void testAddUserWithNullName() throws SQLException {
+        try {
+            User user = new User();
+            recordManager.insertUser(user);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testAddRecordWithNullName() throws SQLException {
+        try {
+            User user = new User();
+            user.setName("Test name");
+            recordManager.insertUser(user);
+            recordManager.setCurrentUser(user);
+            Record record = new Record();
+            record.setText("New text");
+            record.setRecordType(RecordType.MEETING);
+            record.setStartTime(new Date());
+            record.setEndTime(new Date());
+            record.setNotifyTime(new Date());
+            recordManager.insertRecord(record);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testAddRecordWithNullText() throws SQLException {
+        try {
+            User user = new User();
+            user.setName("Test name");
+            recordManager.insertUser(user);
+            recordManager.setCurrentUser(user);
+            Record record = new Record();
+            record.setName("New record");
+            record.setRecordType(RecordType.MEETING);
+            record.setStartTime(new Date());
+            record.setEndTime(new Date());
+            record.setNotifyTime(new Date());
+            recordManager.insertRecord(record);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testAddRecordWithNullRecordType() throws SQLException {
+        try {
+            User user = new User();
+            user.setName("Test name");
+            recordManager.insertUser(user);
+            recordManager.setCurrentUser(user);
+            Record record = new Record();
+            record.setName("New record");
+            record.setText("New text");
+            record.setStartTime(new Date());
+            record.setEndTime(new Date());
+            record.setNotifyTime(new Date());
+            recordManager.insertRecord(record);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testAddRecordWithNullStartTime() throws SQLException {
+        try {
+            User user = new User();
+            user.setName("Test name");
+            recordManager.insertUser(user);
+            recordManager.setCurrentUser(user);
+            Record record = new Record();
+            record.setName("New record");
+            record.setText("New text");
+            record.setRecordType(RecordType.MEETING);
+            record.setEndTime(new Date());
+            record.setNotifyTime(new Date());
+            recordManager.insertRecord(record);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testAddRecordWithNullEndTime() throws SQLException {
+        try {
+            User user = new User();
+            user.setName("Test name");
+            recordManager.insertUser(user);
+            recordManager.setCurrentUser(user);
+            Record record = new Record();
+            record.setName("New record");
+            record.setText("New text");
+            record.setRecordType(RecordType.MEETING);
+            record.setStartTime(new Date());
+            record.setNotifyTime(new Date());
+            recordManager.insertRecord(record);
+            fail();
+        } catch (NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testAddRecordWithNullNotifyTime() throws SQLException {
+        try {
+            User user = new User();
+            user.setName("Test name");
+            recordManager.insertUser(user);
+            recordManager.setCurrentUser(user);
+            Record record = new Record();
+            record.setName("New record");
+            record.setText("New text");
+            record.setRecordType(RecordType.MEETING);
+            record.setStartTime(new Date());
+            record.setEndTime(new Date());
+            recordManager.insertRecord(record);
+            fail();
+        } catch (NullPointerException ex) {
+        }
     }
 }
